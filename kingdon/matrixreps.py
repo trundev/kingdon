@@ -58,31 +58,25 @@ def matrix_rep(p=0, q=0, r=0, signature=None):
     Ip = Ip2
 
     # Store all the signature matrices needed for the E_i
-    SsR = [Z for _ in range(r)]
-    SsP = [P for _ in range(p)]
-    SsN = [N for _ in range(q)]
     if signature is not None:
         Ss = []
         for s in signature:
             if s == 0:
-                Ss.append(SsR.pop(0))
+                Ss.append(Z)
             elif s == 1:
-                Ss.append(SsP.pop(0))
+                Ss.append(P)
             elif s == -1:
-                Ss.append(SsN.pop(0))
+                Ss.append(N)
     else:
-        Ss = [*SsR, *SsP, *SsN]
+        Ss = [Z] * r + [P] * p + [N] * q
     # Construct the matrix reps for the E_i from E_d to E_0
     Es = []
     for i, Si in enumerate(Ss):
-        mats = [I for _ in range(i)]
-        mats.append(Si)
-        mats.extend([Ip for _ in range(d - i - 1)])
+        mats = [I] * i + [Si] + [Ip] * (d - i - 1)
         Es.append(reduce(np.kron, mats, 1))
-    Es = list(Es)
 
     Rs = Es.copy()
-    Iden = reduce(np.kron, [I for _ in range(d)])
+    Iden = np.identity(2**d, dtype=I.dtype)
     Rs.insert(0, Iden)
 
     # Extend Rs with the higher order basis-blades.
