@@ -87,3 +87,24 @@ def test_matrix_rep():
         xy = x.gp(y).asmatrix()
         res = MultiVector.frommatrix(alg, xy - XY).filter()
         assert not res
+
+#
+# HACK: Extended  tests for kingdon#84
+# https://github.com/tBuLi/kingdon/issues/84
+#
+import pytest
+# All 0D, 1D, 2D and 3D signature permutations
+@pytest.mark.parametrize(
+        argnames='signature',
+        argvalues=itertools.chain(*(itertools.product([1, -1, 0], repeat=r)
+                                    for r in range(4))),
+        ids=lambda s: f'{len(s)}D: {s}')
+def test_matrix_mult(signature):
+    """Test multiplication equivalence of matrix representation"""
+    alg = Algebra(signature=signature)
+    x = alg.multivector(name='x')
+    y = alg.multivector(name='y')
+    xmat_ymat = x.asmatrix() @ y.asmatrix()
+    xy_mat = (x * y).asmatrix()
+    np.testing.assert_equal(xmat_ymat, xy_mat,
+                            f'Matrix is NOT mult-equivalent, signature {alg.signature}')
