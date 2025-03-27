@@ -82,7 +82,7 @@ def test_matrix_rep():
         if not 2 <= p+q+r <= 3: continue
         alg = Algebra(p, q, r)
         x = alg.multivector(name='x')
-        y = alg.multivector(name='x')
+        y = alg.multivector(name='y')
         XY = x.asmatrix() @ y.asmatrix()
         xy = x.gp(y).asmatrix()
         res = MultiVector.frommatrix(alg, xy - XY).filter()
